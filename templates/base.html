@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Mon App{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.2/dist/tailwind.min.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-900 text-white">
+
+  <nav class="bg-gray-800 p-4">
+    <div class="container mx-auto flex justify-between items-center">
+      <a href="{{ url_for('dashboard.dashboard')  }}" class="font-bold text-xl">Mon App</a>
+      <div class="flex items-center space-x-4">
+        <a href="{{ url_for('instruments.detections') }}" class="hover:underline">Detections</a>
+        <a href="{{ url_for('auth.login') }}" class="hover:underline">Login</a>
+        <a href="{{ url_for('auth.register') }}" class="hover:underline">Register</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container mx-auto p-4">
+    {% block content %}{% endblock %}
+  </main>
+
+</body>
+</html>

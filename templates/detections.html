@@ -1,0 +1,33 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3>Liste des Détections</h3>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Device Name</th>
+                <th>RSSI</th>
+                <th>MAC Address</th>
+                <th>Timestamp</th>
+                <th>Machine ID</th>
+                <th>Localisation</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for detection in detections %}
+            <tr>
+                <td>{{ detection.id }}</td>
+                <td>{{ detection.device_name }}</td>
+                <td>{{ detection.rssi }}</td>
+                <td>{{ detection.mac_address }}</td>
+                <td>{{ detection.timestamp }}</td>
+                <td>{{ detection.machine_id }}</td>
+                <td>{{ detection.location }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

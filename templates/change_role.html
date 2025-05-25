@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="supervision-app" style="font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; max-width: 1400px; margin: 0 auto; padding: 2rem; min-height: 100vh;">
+
+    <!-- App Header -->
+    <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid #eaeef2;">
+        <div class="app-brand" style="display: flex; align-items: center;">
+            <div style="width: 40px; height: 40px; background-color: #1976d2; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+                <i class="fas fa-shield-alt" style="color: white; font-size: 1.2rem;"></i>
+            </div>
+            <h1 style="font-size: 1.5rem; font-weight: 600; color: #2c3e50; margin: 0;">Supervision</h1>
+        </div>
+        <div class="user-info" style="display: flex; align-items: center;">
+            <div style="margin-right: 1rem; text-align: right;">
+                <div style="font-weight: 500; color: #2c3e50;">Administrateur</div>
+                <div style="font-size: 0.85rem; color: #7f8c8d;">Session active</div>
+            </div>
+            <div style="width: 40px; height: 40px; background-color: #e3f2fd; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-user" style="color: #1976d2;"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages" style="margin-bottom: 1.5rem;">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}" style="padding: 0.75rem 1.25rem; margin-bottom: 1rem; border: 1px solid transparent; border-radius: 0.25rem; 
+                            {% if category == 'success' %} 
+                                color: #155724; background-color: #d4edda; border-color: #c3e6cb;
+                            {% elif category == 'danger' %}
+                                color: #721c24; background-color: #f8d7da; border-color: #f5c6cb;
+                            {% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Dashboard Card -->
+        <div style="background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); margin-bottom: 2rem; overflow: hidden;">
+            <!-- Card Header -->
+            <div style="padding: 1.5rem; border-bottom: 1px solid #f0f2f5; display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="font-size: 1.25rem; font-weight: 600; color: #2c3e50; margin: 0;">
+                    <i class="fas fa-user-cog" style="color: #1976d2; margin-right: 10px;"></i>
+                    Gestion des Permissions
+                </h2>
+                <div style="display: flex; align-items: center;">
+                    <div style="margin-right: 1rem; padding: 6px 12px; background-color: #f8f9fa; border-radius: 20px; font-size: 0.85rem;">
+                        <i class="fas fa-users" style="margin-right: 6px; color: #7f8c8d;"></i>
+                        <span style="font-weight: 500;">{{ users|length }} utilisateurs</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Master Password Input -->
+            <div style="padding: 1.5rem; border-bottom: 1px solid #f0f2f5; background-color: #f8f9fa;">
+                <div style="max-width: 300px; margin: 0 auto; position: relative;">
+                    <input type="password" id="globalMasterPassword" placeholder="Mot de passe admin" style="width: 100%; padding: 10px 12px 10px 36px; border: 1px solid #e0e0e0; border-radius: 6px; font-size: 0.9rem;">
+                    <i class="fas fa-key" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #7f8c8d; font-size: 0.9rem;"></i>
+                    <div style="margin-top: 6px; font-size: 0.75rem; text-align: right;">
+                        <a href="{{ url_for('admin.master_password_forgot') }}" style="color: #1976d2; text-decoration: none;">Mot de passe master oublié ?</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Table -->
+            <div style="padding: 0; overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: #f8f9fa;">
+                            <th style="padding: 1rem; text-align: left; font-weight: 600; color: #495057;">Utilisateur</th>
+                            <th style="padding: 1rem; text-align: center; font-weight: 600; color: #495057;">Rôle Actuel</th>
+                            <th style="padding: 1rem; text-align: center; font-weight: 600; color: #495057;">Nouveau Rôle</th>
+                            <th style="padding: 1rem; text-align: right; font-weight: 600; color: #495057;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for user in users %}
+                        <tr style="border-bottom: 1px solid #f0f2f5; transition: background-color 0.2s;">
+                            <td style="padding: 1rem;">
+                                <div style="display: flex; align-items: center;">
+                                    <div style="width: 36px; height: 36px; background-color: #e3f2fd; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+                                        <i class="fas fa-user" style="color: #1976d2; font-size: 0.9rem;"></i>
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 500; color: #2c3e50;">{{ user.username }}</div>
+                                        <div style="font-size: 0.75rem; color: #7f8c8d;">ID: {{ user.id }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="padding: 1rem; text-align: center;">
+                                <span style="display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 500; background-color: {% if user.role == 'admin' %}#fff3e0{% else %}#e8f5e9{% endif %}; color: {% if user.role == 'admin' %}#e65100{% else %}#2e7d32{% endif %};">
+                                    {% if user.role == 'admin' %}
+                                        Administrateur
+                                    {% else %}
+                                        Utilisateur
+                                    {% endif %}
+                                </span>
+                            </td>
+                            <td style="padding: 1rem; text-align: center;">
+                                <div style="position: relative; min-width: 160px;">
+                                    <select name="new_role" class="role-select" data-user-id="{{ user.id }}" style="width: 100%; padding: 8px 12px; padding-right: 32px; border: 1px solid #e0e0e0; border-radius: 6px; background-color: white; appearance: none; font-size: 0.9rem;">
+                                        <option value="user" {% if user.role == 'user' %}selected{% endif %}>Utilisateur Standard</option>
+                                        <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Administrateur</option>
+                                    </select>
+                                    <i class="fas fa-chevron-down" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #7f8c8d; font-size: 0.8rem;"></i>
+                                </div>
+                            </td>
+                            <td style="padding: 1rem; text-align: right;">
+                                <form id="roleForm{{ user.id }}" method="POST" action="{{ url_for('admin.change_role') }}" style="display: inline;">
+                                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                                    <input type="hidden" name="new_role" id="newRole{{ user.id }}" value="">
+                                    <button type="button" onclick="submitRoleForm('{{ user.id }}')" style="padding: 8px 16px; background-color: #1976d2; color: white; border: none; border-radius: 6px; font-weight: 500; font-size: 0.9rem; margin-right: 8px;">
+                                        <i class="fas fa-save" style="margin-right: 8px;"></i>Appliquer
+                                    </button>
+                                </form>
+                                
+                                <form id="deleteForm{{ user.id }}" method="POST" action="{{ url_for('admin.delete_user') }}" style="display: inline;">
+                                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                                    <input type="hidden" name="master_password" id="deleteMasterPass{{ user.id }}" value="">
+                                    <button type="button" onclick="submitDeleteForm('{{ user.id }}')" style="padding: 8px 16px; background-color: #d32f2f; color: white; border: none; border-radius: 6px; font-weight: 500; font-size: 0.9rem;">
+                                        <i class="fas fa-trash" style="margin-right: 8px;"></i>Supprimer
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); padding: 1.5rem; margin-top: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center;">
+                    <i class="fas fa-server" style="color: #1976d2; margin-right: 12px; font-size: 1.2rem;"></i>
+                    <div>
+                        <div style="font-weight: 500; color: #2c3e50;">Statut du Système</div>
+                        <div style="font-size: 0.85rem; color: #7f8c8d;">Tous les services fonctionnent normalement</div>
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 0.85rem; color: #7f8c8d;">Version</div>
+                    <div style="font-weight: 500; color: #2c3e50;">1.0.0</div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    function submitRoleForm(userId) {
+        const masterPassword = document.getElementById('globalMasterPassword').value;
+        const roleSelect = document.querySelector(`.role-select[data-user-id="${userId}"]`);
+        const newRole = roleSelect.value;
+        
+        if (!masterPassword) {
+            alert('Veuillez entrer le mot de passe admin');
+            return;
+        }
+
+        // Mettre à jour les champs cachés
+        document.getElementById(`newRole${userId}`).value = newRole;
+        
+        // Ajouter le mot de passe master au formulaire
+        const form = document.getElementById(`roleForm${userId}`);
+        const masterPasswordInput = document.createElement('input');
+        masterPasswordInput.type = 'hidden';
+        masterPasswordInput.name = 'master_password';
+        masterPasswordInput.value = masterPassword;
+        form.appendChild(masterPasswordInput);
+
+        // Soumettre le formulaire
+        form.submit();
+    }
+
+    function submitDeleteForm(userId) {
+        const masterPassword = document.getElementById('globalMasterPassword').value;
+        
+        if (!masterPassword) {
+            alert('Veuillez entrer le mot de passe admin');
+            return;
+        }
+
+        if (!confirm('Voulez-vous vraiment supprimer cet utilisateur ?')) {
+            return;
+        }
+
+        // Ajouter le mot de passe master au formulaire
+        const form = document.getElementById(`deleteForm${userId}`);
+        const masterPasswordInput = document.createElement('input');
+        masterPasswordInput.type = 'hidden';
+        masterPasswordInput.name = 'master_password';
+        masterPasswordInput.value = masterPassword;
+        form.appendChild(masterPasswordInput);
+
+        // Soumettre le formulaire
+        form.submit();
+    }
+</script>
+
+<style>
+    .supervision-app { background-color: #f8fafc; }
+    tr:hover { background-color: #f8fafc !important; }
+    select, input, button { outline: none; cursor: pointer; }
+    select:focus, input:focus {
+        border-color: #1976d2 !important;
+        box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
+    }
+    button:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+    button:active {
+        transform: translateY(1px);
+    }
+    #globalMasterPassword:focus {
+        border-color: #1976d2 !important;
+        box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
+    }
+    @media (max-width: 992px) {
+        .supervision-app { padding: 1.5rem !important; }
+        table { display: block; overflow-x: auto; white-space: nowrap; }
+        th, td { min-width: 180px !important; }
+        .app-brand h1 { font-size: 1.25rem !important; }
+    }
+    @media (max-width: 768px) {
+        .user-info { display: none !important; }
+    }
+</style>
+{% endblock %}

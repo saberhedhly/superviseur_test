@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Instruments & Machines</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    :root {
+      --sidebar-width: 280px;
+      --sidebar-collapsed: 80px;
+      --sidebar-bg: #1a1a2e;
+      --sidebar-color: #b8b8d1;
+      --sidebar-active-bg: #0f3460;
+      --sidebar-active-color: #fff;
+      --sidebar-hover-bg: #16213e;
+      --main-bg: #f5f7fb;
+      --card-bg: #fff;
+      --card-border: rgba(0,0,0,.125);
+      --primary-color: #4e73df;
+      --success-color: #1cc88a;
+      --danger-color: #e74a3b;
+      --warning-color: #f6c23e;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--main-bg);
+      color: #333;
+      display: flex;
+      min-height: 100vh;
+      margin: 0;
+      transition: all 0.3s;
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--sidebar-bg);
+      color: var(--sidebar-color);
+      position: fixed;
+      height: 100vh;
+      transition: all 0.3s;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sidebar-collapsed {
+      width: var(--sidebar-collapsed);
+    }
+
+    .sidebar-brand {
+      padding: 1.5rem 1rem;
+      color: #fff;
+      font-weight: bold;
+      font-size: 1.2rem;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: all 0.3s;
+    }
+
+    .sidebar-collapsed .sidebar-brand {
+      padding: 1rem 0.5rem;
+    }
+
+    .sidebar-brand img {
+      max-width: 120px;
+      margin-bottom: 15px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.1);
+      padding: 5px;
+      transition: all 0.3s;
+    }
+
+    .sidebar-collapsed .sidebar-brand img {
+      max-width: 50px;
+      margin-bottom: 0;
+    }
+
+    .sidebar-collapsed .sidebar-brand span {
+      display: none;
+    }
+
+    .sidebar-nav {
+      padding: 0;
+      list-style: none;
+      flex-grow: 1;
+      overflow-y: auto;
+    }
+
+    .sidebar-header {
+      color: #818896;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      padding: 1.5rem 1rem 0.5rem;
+      font-weight: bold;
+      letter-spacing: 0.13em;
+      white-space: nowrap;
+    }
+
+    .sidebar-collapsed .sidebar-header {
+      display: none;
+    }
+
+    .sidebar-item {
+      position: relative;
+    }
+
+    .sidebar-link {
+      padding: 0.75rem 1rem;
+      color: var(--sidebar-color);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      border-left: 3px solid transparent;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .sidebar-link:hover, .sidebar-link.active {
+      color: var(--sidebar-active-color);
+      background: var(--sidebar-hover-bg);
+      border-left-color: var(--sidebar-active-bg);
+    }
+
+    .sidebar-link i {
+      margin-right: 0.5rem;
+      font-size: 1.1rem;
+      width: 24px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .sidebar-collapsed .sidebar-link span {
+      display: none;
+    }
+
+    .export-section {
+      margin-top: auto;
+      padding: 1rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* Main Content Styles */
+    .main {
+      margin-left: var(--sidebar-width);
+      width: calc(100% - var(--sidebar-width));
+      padding: 20px;
+      background-color: var(--main-bg);
+      transition: all 0.3s;
+    }
+
+    .main-collapsed {
+      margin-left: var(--sidebar-collapsed);
+      width: calc(100% - var(--sidebar-collapsed));
+    }
+
+    /* Topbar Styles */
+    .topbar {
+      height: 4.375rem;
+      box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+      background-color: #fff;
+      border-radius: 0.35rem;
+      padding: 0 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    /* Card Styles */
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 0.5rem;
+      box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+      margin-bottom: 1.5rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0.5rem 1.5rem 0 rgba(58, 59, 69, 0.15);
+    }
+
+    .card-header {
+      background-color: #f8f9fc;
+      border-bottom: 1px solid #e3e6f0;
+      padding: 1rem 1.35rem;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Table Styles */
+    .table thead {
+      background-color: #f8f9fc;
+      color: var(--primary-color);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+    }
+
+    .table-responsive {
+      max-height: 500px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .table-hover tbody tr:hover {
+      background-color: rgba(78, 115, 223, 0.05);
+    }
+
+    /* Badge Styles */
+    .badge-Prochain {
+      background-color: var(--warning-color);
+      color: #212529;
+    }
+
+    .badge-Position {
+      background-color: var(--danger-color);
+      color: white;
+    }
+
+    /* Summary Card Styles */
+    .summary-card {
+      border-left: 0.25rem solid;
+      border-radius: 0.35rem;
+      transition: all 0.3s;
+      cursor: pointer;
+      height: 100%;
+    }
+
+    .summary-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .summary-card .card-body {
+      padding: 1.25rem;
+      text-align: center;
+    }
+
+    .summary-card-primary {
+      border-left-color: var(--primary-color);
+    }
+
+    .summary-card-success {
+      border-left-color: var(--success-color);
+    }
+
+    .summary-card-danger {
+      border-left-color: var(--danger-color);
+    }
+
+    .summary-card .stat-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: rgba(0,0,0,0.2);
+    }
+
+    .summary-card .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .summary-card .stat-label {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      color: #6c757d;
+      font-weight: 600;
+    }
+
+    /* Button Styles */
+    .btn-icon {
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    /* Modal Styles */
+    .modal-content {
+      border: none;
+      box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-header {
+      border-bottom: 1px solid #e3e6f0;
+      background-color: #f8f9fc;
+    }
+
+    /* Alert Styles */
+    .alert-panel {
+      border-left: 4px solid;
+      padding-left: 1rem;
+    }
+
+    .alert-panel.alert-warning {
+      border-left-color: var(--warning-color);
+    }
+
+    .alert-panel.alert-danger {
+      border-left-color: var(--danger-color);
+    }
+
+    /* Animation */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section {
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    /* Mobile Menu Button */
+    .mobile-menu-btn {
+      display: none;
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 1100;
+      background: var(--sidebar-active-bg);
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+    }
+
+    /* Slider Panel Styles */
+    .slider-panel {
+      position: fixed;
+      bottom: -80px;
+      left: var(--sidebar-width);
+      right: 0;
+      background: #fff;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+      border-top: 1px solid #e3e6f0;
+      transition: all 0.3s ease;
+      z-index: 100;
+      padding: 15px;
+      height: 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sidebar-collapsed + .main .slider-panel {
+      left: var(--sidebar-collapsed);
+    }
+
+    .slider-panel.active {
+      bottom: 0;
+    }
+
+    .slider-handle {
+      position: absolute;
+      top: -25px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 25px;
+      text-align: center;
+      padding: 5px;
+      cursor: pointer;
+      background: #f8f9fc;
+      border-radius: 5px 5px 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slider-handle i {
+      transition: transform 0.3s ease;
+    }
+
+    .slider-panel.active .slider-handle i {
+      transform: rotate(180deg);
+    }
+
+    .slider-content {
+      padding: 15px;
+      width: 100%;
+      text-align: center;
+    }
+
+    /* Adjust main content when slider is active */
+    .main.slider-active {
+      padding-bottom: 80px;
+    }
+
+    /* Date condition styles */
+    .date-critical {
+      background-color: rgba(220, 53, 69, 0.1) !important;
+      border-left: 4px solid #dc3545 !important;
+    }
+
+    .date-warning {
+      background-color: rgba(255, 193, 7, 0.1) !important;
+      border-left: 4px solid #ffc107 !important;
+    }
+
+    .date-info {
+      background-color: rgba(23, 162, 184, 0.1) !important;
+      border-left: 4px solid #17a2b8 !important;
+    }
+
+    .date-badge {
+      font-size: 0.7em;
+      margin-left: 5px;
+      padding: 3px 6px;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 992px) {
+      .sidebar {
+        transform: translateX(-100%);
+        width: 280px;
+      }
+      
+      .sidebar.mobile-show {
+        transform: translateX(0);
+      }
+      
+      .topbar, .main {
+        left: 0;
+      }
+      
+      .mobile-menu-btn {
+        display: block;
+      }
+      
+      .main {
+        margin-left: 0;
+        width: 100%;
+      }
+
+      .slider-panel {
+        left: 0;
+      }
+
+      .summary-card .stat-value {
+        font-size: 1.5rem;
+      }
+
+      .table td, .table th {
+        padding: 0.5rem;
+      }
+
+      .modal-dialog {
+        margin: 1rem auto;
+        max-width: 95%;
+      }
+    }
+
+    @media (min-width: 993px) {
+      .sidebar {
+        transform: translateX(0) !important;
+      }
+    }
+
+    /* Tablet-specific adjustments */
+    @media (min-width: 768px) and (max-width: 992px) {
+      .sidebar {
+        width: 80px;
+      }
+      .sidebar .sidebar-brand span,
+      .sidebar .sidebar-link span,
+      .sidebar .sidebar-header {
+        display: none;
+      }
+      .main {
+        margin-left: 80px;
+        width: calc(100% - 80px);
+      }
+      .slider-panel {
+        left: 80px;
+      }
+    }
+
+    /* Small mobile devices */
+    @media (max-width: 576px) {
+      .main {
+        padding: 15px;
+      }
+
+      .summary-card {
+        margin-bottom: 15px;
+      }
+
+      .btn, .btn-icon {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+      }
+
+      .table {
+        font-size: 0.85rem;
+      }
+
+      .slider-panel {
+        height: 70px;
+        bottom: -70px;
+      }
+
+      .main.slider-active {
+        padding-bottom: 70px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Mobile Menu Button -->
+  <button class="mobile-menu-btn" id="mobileMenuBtn">
+    <i class="bi bi-list"></i>
+  </button>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo">
+      <span>supervision</span>
+    </div>
+    
+    <div class="sidebar-header">Responsable Test</div>
+    <div class="sidebar-item">
+      <a href="#" class="sidebar-link">
+        <i class="bi bi-person"></i>
+        <span>Admin</span>
+      </a>
+    </div>
+    
+    <div class="sidebar-header">Menu</div>
+    <ul class="sidebar-nav">
+      <li class="sidebar-item">
+        <a href="#" class="sidebar-link active" data-section="home">
+          <i class="bi bi-house"></i>
+          <span>Accueil</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a href="#" class="sidebar-link" data-section="machines">
+          <i class="bi bi-pc-display-horizontal"></i>
+          <span>Machines</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a href="#" class="sidebar-link" data-section="instruments">
+          <i class="bi bi-tools"></i>
+          <span>Instruments</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a href="#" class="sidebar-link" data-section="alerts">
+          <i class="bi bi-exclamation-triangle"></i>
+          <span>Alertes</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a href="{{ url_for('admin.change_role_page') }}" class="sidebar-link">
+          <i class="bi bi-person-badge"></i>
+          <span>Change User</span>
+        </a>
+      </li>
+    </ul>
+    
+    <div class="export-section">
+      <a href="{{ url_for('instruments.export')}}" class="sidebar-link">
+        <i class="bi bi-file-earmark-excel"></i>
+        <span>Exportation Excel</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main" id="main">
+    <!-- Topbar -->
+    <nav class="topbar">
+      <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-dark">
+        <i class="bi bi-box-arrow-right"></i> Déconnexion
+      </a>
+    </nav>
+
+    <!-- Home Section -->
+    <div class="section active" id="home-section">
+      <div class="row mb-4">
+        <div class="col-xl-4 col-md-6 mb-4">
+          <div class="card summary-card summary-card-primary" data-section="machines">
+            <div class="card-body">
+              <i class="bi bi-pc-display-horizontal stat-icon text-primary"></i>
+              <div class="stat-value">{{ machines|length }}</div>
+              <div class="stat-label">Total Machines</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-xl-4 col-md-6 mb-4">
+          <div class="card summary-card summary-card-success" data-section="instruments">
+            <div class="card-body">
+              <i class="bi bi-tools stat-icon text-success"></i>
+              <div class="stat-value">{{ instruments|length }}</div>
+              <div class="stat-label">Total Instruments</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-xl-4 col-md-6 mb-4">
+          <div class="card summary-card summary-card-danger" data-section="alerts">
+            <div class="card-body">
+              <i class="bi bi-exclamation-triangle stat-icon text-danger"></i>
+              <div class="stat-value">{{ alerts|length }}</div>
+              <div class="stat-label">Alertes récentes</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Alerts Preview -->
+      {% if alerts %}
+      <div class="card shadow">
+        <div class="card-header">
+          <h6 class="m-0 font-weight-bold text-primary">Dernières Alertes</h6>
+        </div>
+        <div class="card-body">
+          {% for a in alerts[:3] %}
+          <div class="alert alert-panel alert-{% if 'Prochain' in a['alert_type'] %}warning{% else %}danger{% endif %} mb-2">
+            <strong>{{ a['instrument_name'] }}</strong> - {{ a['alert_type'] }}<br>
+            <small class="text-muted">{{ a['alert_date'] }}</small>: {{ a['message'] }}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Machines Section -->
+    <div class="section" id="machines-section">
+      <div class="card shadow">
+        <div class="card-header">
+          <h6 class="m-0 font-weight-bold text-primary">Machines</h6>
+          <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modalAddMachine">
+            <i class="bi bi-plus-circle"></i> Ajouter
+          </button>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th>Nom Machine</th>
+                  <th>Localisation</th>
+                  <th>MAC Address</th>
+                  <th class="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for m in machines %}
+                <tr>
+                  <td>{{ m['machine_name'] }}</td>
+                  <td>{{ m['localisation'] }}</td>
+                  <td>{{ m['mac_address'] }}</td>
+                  <td class="text-center">
+                    <a href="{{ url_for('machines.edit_machine', id=m['id']) }}" class="btn btn-sm btn-primary btn-icon" title="Modifier">
+                      <i class="bi bi-pencil-square"></i>
+                    </a>
+                    <form action="{{ url_for('machines.delete_machine', id=m['id']) }}" method="POST" class="d-inline" onsubmit="return confirm('Supprimer cette machine ?');">
+                      <button type="submit" class="btn btn-sm btn-danger btn-icon" title="Supprimer">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="4" class="text-center">Aucune machine</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Instruments Section -->
+    <div class="section" id="instruments-section">
+      <div class="card shadow">
+        <div class="card-header">
+          <h6 class="m-0 font-weight-bold text-primary">Instruments</h6>
+          <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#modalAddInstrument">
+            <i class="bi bi-plus-circle"></i> Ajouter
+          </button>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0 small" id="instrumentsTable">
+              <thead>
+                <tr>
+                  <th>Nom Instrument</th>
+                  <th>Désignation</th>
+                  <th>Date Étalonnage</th>
+                  <th>Fréquence</th>
+                  <th>Prochain Étalonnage</th>
+                  <th>Machine</th>
+                  <th class="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for i in instruments %}
+                <tr class="{% if i['date_prochain_etalonnage'] %}date-row{% endif %}" 
+                    data-date="{{ i['date_prochain_etalonnage'] }}">
+                  <td>{{ i['instrument_name'] }}</td>
+                  <td>{{ i['designation'] }}</td>
+                  <td>{{ i['date_etalonnage'] }}</td>
+                  <td>{{ i['frequence'] }} mois</td>
+                  <td class="date-prochain">{{ i['date_prochain_etalonnage'] }}</td>
+                  <td>{{ i['machine_name'] or '-' }}</td>
+                  <td class="text-center">
+                    <a href="{{ url_for('instruments.edit_instrument', id=i['id']) }}" class="btn btn-sm btn-primary btn-icon" title="Modifier">
+                      <i class="bi bi-pencil-square"></i>
+                    </a>
+                    <form action="{{ url_for('instruments.delete_instrument', id=i['id']) }}" method="POST" class="d-inline" onsubmit="return confirm('Supprimer cet instrument ?');">
+                      <button type="submit" class="btn btn-sm btn-danger btn-icon" title="Supprimer">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="7" class="text-center">Aucun instrument</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alerts Section -->
+    <div class="section" id="alerts-section">
+      <div class="card shadow">
+        <div class="card-header">
+          <h6 class="m-0 font-weight-bold text-primary">Alertes récentes</h6>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th>Instrument</th>
+                  <th>Type Alerte</th>
+                  <th>Date</th>
+                  <th>Message</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for a in alerts %}
+                <tr>
+                  <td>{{ a['instrument_name'] }}</td>
+                  <td>
+                    <span class="badge badge-{{ 'Prochain' if 'Prochain' in a['alert_type'] else 'Position' }}">
+                      {{ a['alert_type'] }}
+                    </span>
+                  </td>
+                  <td>{{ a['alert_date'] }}</td>
+                  <td>{{ a['message'] }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="4" class="text-center">Aucune alerte</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show mt-3" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <!-- Slider Panel for Detections -->
+  <div class="slider-panel" id="detectionsSlider">
+    <div class="slider-handle">
+      <i class="bi bi-chevron-up"></i>
+    </div>
+    <div class="slider-content">
+      <a href="{{ url_for('instruments.detections')}}" class="btn btn-primary btn-lg">
+        <i class="bi bi-graph-up"></i> Voir toutes les détections
+      </a>
+    </div>
+  </div>
+
+  <!-- Modal Ajouter Machine -->
+  <div class="modal fade" id="modalAddMachine" tabindex="-1" aria-labelledby="modalAddMachineLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <form method="POST" action="{{ url_for('machines.add_machine') }}">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="modalAddMachineLabel">Ajouter Machine</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="machine_name" class="form-label">Nom Machine</label>
+                <input type="text" class="form-control" id="machine_name" name="machine_name" required placeholder="Entrez le nom de la machine">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="localisation" class="form-label">Localisation</label>
+                <input type="text" class="form-control" id="localisation" name="localisation" required placeholder="Entrez la localisation">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="mac_address" class="form-label">MAC Address</label>
+                <input type="text" class="form-control" id="mac_address" name="mac_address" required placeholder="Entrez l'adresse MAC">
+                <div class="form-text">Format: 00:1A:2B:3C:4D:5E</div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+            <button type="submit" class="btn btn-primary">Ajouter</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Ajouter Instrument -->
+  <div class="modal fade" id="modalAddInstrument" tabindex="-1" aria-labelledby="modalAddInstrumentLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <form method="POST" action="{{ url_for('instruments.add_instrument') }}">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="modalAddInstrumentLabel">Ajouter Instrument</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="instrument_name" class="form-label">Nom Instrument</label>
+                <input type="text" class="form-control" id="instrument_name" name="instrument_name" required placeholder="Entrez le nom de l'instrument">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="designation" class="form-label">Désignation</label>
+                <input type="text" class="form-control" id="designation" name="designation" placeholder="Entrez la désignation">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label for="date_etalonnage" class="form-label">Date Étalonnage</label>
+                <input type="date" class="form-control" id="date_etalonnage" name="date_etalonnage" required>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="frequence" class="form-label">Fréquence (Mois)</label>
+                <input type="number" min="1" class="form-control" id="frequence" name="frequence" required placeholder="Ex: 12">
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="date_prochain_etalonnage" class="form-label">Prochain Étalonnage</label>
+                <input type="date" class="form-control" id="date_prochain_etalonnage" name="date_prochain_etalonnage" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label for="machine_id" class="form-label">Machine associée</label>
+                <select class="form-select" id="machine_id" name="machine_id" required>
+                  <option value="" disabled selected>Sélectionner une machine</option>
+                  {% for m in machines %}
+                    <option value="{{ m['id'] }}">{{ m['machine_name'] }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+            <button type="submit" class="btn btn-primary">Ajouter</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Section switching
+      const sections = {
+        'home': document.getElementById('home-section'),
+        'machines': document.getElementById('machines-section'),
+        'instruments': document.getElementById('instruments-section'),
+        'alerts': document.getElementById('alerts-section')
+      };
+      
+      const sidebarLinks = document.querySelectorAll('.sidebar-link[data-section]');
+      const sidebar = document.getElementById('sidebar');
+      const main = document.getElementById('main');
+      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      const sliderPanel = document.getElementById('detectionsSlider');
+      const sliderHandle = sliderPanel.querySelector('.slider-handle');
+      
+      function showSection(sectionId) {
+        // Hide all sections
+        Object.values(sections).forEach(section => {
+          section.classList.remove('active');
+        });
+        
+        // Show selected section
+        if (sections[sectionId]) {
+          sections[sectionId].classList.add('active');
+        }
+        
+        // Update active link
+        sidebarLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('data-section') === sectionId) {
+            link.classList.add('active');
+          }
+        });
+        
+        // Show/hide slider based on section
+        if (sectionId === 'alerts') {
+          setTimeout(() => {
+            sliderPanel.classList.add('active');
+            main.classList.add('slider-active');
+          }, 300);
+        } else {
+          sliderPanel.classList.remove('active');
+          main.classList.remove('slider-active');
+        }
+        
+        // On mobile, close sidebar after selection
+        if (window.innerWidth <= 992) {
+          sidebar.classList.remove('mobile-show');
+        }
+      }
+      
+      // Add click event to sidebar links
+      sidebarLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const sectionId = this.getAttribute('data-section');
+          showSection(sectionId);
+        });
+      });
+      
+      // Add click event to summary cards
+      document.querySelectorAll('.summary-card').forEach(card => {
+        card.addEventListener('click', function() {
+          const sectionId = this.getAttribute('data-section');
+          showSection(sectionId);
+        });
+      });
+      
+      // Mobile menu toggle
+      mobileMenuBtn.addEventListener('click', function() {
+        sidebar.classList.toggle('mobile-show');
+      });
+      
+      // Toggle slider panel
+      sliderHandle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        sliderPanel.classList.toggle('active');
+        main.classList.toggle('slider-active');
+      });
+      
+      // Close sidebar when clicking outside on mobile
+      document.addEventListener('click', function(event) {
+        if (window.innerWidth <= 992 && 
+            !sidebar.contains(event.target) && 
+            event.target !== mobileMenuBtn && 
+            !mobileMenuBtn.contains(event.target)) {
+          sidebar.classList.remove('mobile-show');
+        }
+      });
+      
+      // Highlight instruments based on calibration dates
+      function highlightInstrumentsByDate() {
+        const rows = document.querySelectorAll('#instrumentsTable tbody tr');
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        rows.forEach(row => {
+          const dateCell = row.querySelector('.date-prochain');
+          if (!dateCell || !dateCell.textContent.trim()) return;
+          
+          const dateProchain = new Date(dateCell.textContent.trim() + 'T00:00:00');
+          const diffTime = dateProchain - today;
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          
+          // Reset classes
+          row.classList.remove('date-critical', 'date-warning', 'date-info');
+          
+          // Remove any existing badges
+          const existingBadge = dateCell.querySelector('.date-badge');
+          if (existingBadge) {
+            dateCell.removeChild(existingBadge);
+          }
+          
+          if (dateProchain < today) {
+            // En retard
+            row.classList.add('date-critical');
+            const badge = document.createElement('span');
+            badge.className = 'badge bg-danger date-badge';
+            badge.textContent = 'En retard';
+            dateCell.appendChild(badge);
+          } else if (diffDays <= 7) {
+            // Urgent (dans 7 jours)
+            row.classList.add('date-warning');
+            const badge = document.createElement('span');
+            badge.className = 'badge bg-warning text-dark date-badge';
+            badge.textContent = 'Urgent';
+            dateCell.appendChild(badge);
+          } else if (diffDays <= 30) {
+            // Proche (dans 30 jours)
+            row.classList.add('date-info');
+            const badge = document.createElement('span');
+            badge.className = 'badge bg-info text-dark date-badge';
+            badge.textContent = 'Proche';
+            dateCell.appendChild(badge);
+          }
+        });
+      }
+      
+      // Auto-fill next calibration date when frequency changes
+      const frequenceInput = document.getElementById('frequence');
+      const dateEtalonnageInput = document.getElementById('date_etalonnage');
+      const dateProchainInput = document.getElementById('date_prochain_etalonnage');
+      
+      if (frequenceInput && dateEtalonnageInput && dateProchainInput) {
+        function calculateNextCalibration() {
+          if (dateEtalonnageInput.value && frequenceInput.value) {
+            const date = new Date(dateEtalonnageInput.value);
+            date.setMonth(date.getMonth() + parseInt(frequenceInput.value));
+            const nextDate = date.toISOString().split('T')[0];
+            dateProchainInput.value = nextDate;
+          }
+        }
+        
+        frequenceInput.addEventListener('change', calculateNextCalibration);
+        dateEtalonnageInput.addEventListener('change', calculateNextCalibration);
+      }
+      
+      // Date validation for instrument form
+      if (dateEtalonnageInput) {
+        dateEtalonnageInput.addEventListener('change', function() {
+          const selectedDate = new Date(this.value);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          
+          if (selectedDate > today) {
+            alert("La date d'étalonnage ne peut pas être dans le futur");
+            this.value = '';
+          }
+        });
+      }
+      
+      if (dateProchainInput) {
+        dateProchainInput.addEventListener('change', function() {
+          const etalonnageDate = new Date(dateEtalonnageInput.value);
+          const prochainDate = new Date(this.value);
+          
+          if (prochainDate <= etalonnageDate) {
+            alert("La date du prochain étalonnage doit être après la date d'étalonnage");
+            this.value = '';
+          }
+        });
+      }
+      
+      // Show home section by default
+      showSection('home');
+      
+      // Highlight instruments by date
+      highlightInstrumentsByDate();
+      
+      // Handle window resize
+      window.addEventListener('resize', function() {
+        if (window.innerWidth > 992) {
+          sidebar.classList.remove('mobile-show');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
