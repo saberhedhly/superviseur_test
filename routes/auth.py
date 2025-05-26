@@ -203,8 +203,8 @@ def reset_password():
         if user and user['new_code'] == code:
             hashed_password = generate_password_hash(new_password)
             updated_at = datetime.utcnow()
-            cur.execute("UPDATE users SET password = ?, new_code = NULL, updated_at = ? WHERE email = ?", 
-                        (hashed_password, updated_at, email))
+            cur.execute("UPDATE users SET password = ?, new_code = ?, updated_at = ? WHERE email = ?", 
+                        (hashed_password, updated_at, email, new_code))
             conn.commit()
             conn.close()
             flash("✅ Mot de passe réinitialisé avec succès. Vous pouvez maintenant vous connecter.", "success")
