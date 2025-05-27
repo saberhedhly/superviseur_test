@@ -1,0 +1,13 @@
+ajouter 
+git init
+git add .
+git commit -m "Initial commit"
+git branch -M main
+git remote add origin https://github.com/username/esp32-flask-monitor.git
+git push -u origin main
+
+mis à jour
+git status
+git add templates/base.html    exemple
+git commit -m "🔧 Mise à jour test base.html"
+git push origin main
