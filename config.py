@@ -19,7 +19,7 @@ class Config:
 
     # Limites journalières d'alertes par type
     MAX_ALERTS_PER_DAY = {
-        "Instrument Introuvable": 100,
-        "Prochain Étalonnage": 100,
-        "Position Incorrecte": 100,
+        "Instrument Introuvable": 20,
+        "Prochain Étalonnage": 20,
+        "Position Incorrecte": 1000,
     }
