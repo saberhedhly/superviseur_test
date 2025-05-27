@@ -13,9 +13,9 @@ class Config:
     DATABASE = os.path.join(BASE_DIR, 'database.db')
 
     # Informations pour l'envoi d'e-mails (à adapter si besoin)
-    EMAIL_SENDER = 'marwabenchaabene508@gmail.com'
-    EMAIL_PASSWORD = 'npmp idbi rgnz ornr'  # ⚠️ Utiliser une variable d'environnement est plus sûr
-    EMAIL_RECEIVER = 'marwabenchaabene508@gmail.com'
+    EMAIL_SENDER = 'hedhlysaber@gmail.com'
+    EMAIL_PASSWORD = 'kvqx osid ntqo dwxg'  # ⚠️ Utiliser une variable d'environnement est plus sûr
+    EMAIL_RECEIVER = 'hedhlysaber@gmail.com'
 
     # Limites journalières d'alertes par type
     MAX_ALERTS_PER_DAY = {
